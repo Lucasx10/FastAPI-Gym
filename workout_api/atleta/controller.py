@@ -1,14 +1,16 @@
 from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, Body, HTTPException, status
+from fastapi_pagination import LimitOffsetPage, add_pagination, paginate
+from sqlalchemy.exc import IntegrityError
 from pydantic import UUID4
 from sqlalchemy.future import select
 from workout_api.contrib.dependencies import DatabaseDependency
-from workout_api.atleta.schemas import AtletaIn, AtletaOut, AtletaUpdate
+from workout_api.atleta.schemas import AtletaGetAll, AtletaIn, AtletaOut, AtletaUpdate
 from workout_api.atleta.models import AtletaModel
 from workout_api.treinos.models import TreinoModel
 from workout_api.academia.models import AcademiaModel
-
+    
 router = APIRouter()
 
 @router.post(
@@ -54,28 +56,37 @@ async def post(
         db_session.add(atleta_model)
         await db_session.commit()
 
-    except Exception:
+    except IntegrityError as e:
         raise HTTPException(
             status_code=status.HTTP_303_SEE_OTHER,
             detail=f'Já existe um atleta cadastrado com o cpf: {atleta_out.cpf}'
         )
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail='Ocorreu um erro ao inserir os dados no banco'
+        )
 
     return atleta_out
+
 
 @router.get(
     '/',  
     summary='Consultar todos os Atletas',
     status_code=status.HTTP_200_OK,
-    response_model=list[AtletaOut],
+    response_model=LimitOffsetPage[AtletaGetAll],
 )
 async def query(db_session: DatabaseDependency, nome: str | None = None, cpf: str | None = None) -> list[AtletaOut]:
-    atletas: list[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()
+    atletas: list[AtletaGetAll] = (await db_session.execute(select(AtletaModel))).scalars().all()
     if nome:
         atletas = [atleta for atleta in atletas if atleta.nome == nome]
     if cpf:
         atletas = [atleta for atleta in atletas if atleta.cpf == cpf]
 
-    return atletas
+    return paginate(atletas)
+
+add_pagination(router)
 
 @router.get(
     '/{id}', 
