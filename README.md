@@ -23,8 +23,8 @@ Instruções:
     - [x] Get all
         - [x] Atleta
             - [x] Nome
-            - [x] Centro de treinamento
-            - [x] Categoria
+            - [x] Academia
+            - [x] Treinos
 - [x] Manipular exceção de integridade dos dados em cada módulo/tabela
     - [x] Tratar sqlalchemy.exc.IntegrityError e devolver a seguinte mensagem: “Já existe um atleta cadastrado com o cpf: x”
     - [x] Definir status_code: 303
@@ -46,7 +46,7 @@ Para executar o código:
 
 - Instalar requirements.txt
 ```console
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 - Rodar banco de dados na pasta workout_api
@@ -97,8 +97,8 @@ async def query(db_session: DatabaseDependency, nome: str | None = None, cpf: st
       - get all
             - atleta
                   - nome
-                  - centro_treinamento
-                  - categoria
+                  - academia
+                  - treinos
 
 Foi criado o schema AtletaGetAll personalizado herdando o OutMixin do contrib com id e created_at em atletas/schemas.py 
 
