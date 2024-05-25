@@ -203,4 +203,4 @@ add_pagination(router)
 
 Todos os endpoints estão funcionando como esperado.
 
-<img src="endpoints.png" alt="Endpoints WorkoutApi" >
+<img src="endpoints-api.png" alt="Endpoints WorkoutApi" >
