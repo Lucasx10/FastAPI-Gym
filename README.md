@@ -15,24 +15,21 @@ https://github.com/digitalinnovationone/workout_api
  
 Instruções:
  
-- adicionar query parameters nos endpoints
-      - atleta
-            - nome
-            - cpf
-
-- customizar response de retorno de endpoints
-      - get all
-            - atleta
-                  - nome
-                  - centro_treinamento
-                  - categoria
-
-- Manipular exceção de integridade dos dados em cada módulo/tabela
-      - sqlalchemy.exc.IntegrityError e devolver a seguinte mensagem: “Já existe um atleta cadastrado com o cpf: x”
-      - status_code: 303
-
-- Adicionar paginação utilizando a lib: fastapi-pagination
-      - limit e offset
+- [x] Adicionar query parameters nos endpoints
+    - [x] Atleta
+        - [x] Nome
+        - [x] CPF
+- [x] Customizar response de retorno de endpoints
+    - [x] Get all
+        - [x] Atleta
+            - [x] Nome
+            - [x] Centro de treinamento
+            - [x] Categoria
+- [x] Manipular exceção de integridade dos dados em cada módulo/tabela
+    - [x] Tratar sqlalchemy.exc.IntegrityError e devolver a seguinte mensagem: “Já existe um atleta cadastrado com o cpf: x”
+    - [x] Definir status_code: 303
+- [x] Adicionar paginação utilizando a lib: fastapi-pagination
+    - [x] Implementar limit e offset
 
 # :zap:  Tecnologias Utilizadas
 
