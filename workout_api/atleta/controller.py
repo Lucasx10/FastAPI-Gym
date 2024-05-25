@@ -69,8 +69,12 @@ async def post(
     response_model=list[AtletaOut],
     response_model_exclude=["cpf","peso","altura","idade","sexo"]
 )
-async def query(db_session: DatabaseDependency) -> list[AtletaOut]:
+async def query(db_session: DatabaseDependency, nome: str | None = None, cpf: str | None = None) -> list[AtletaOut]:
     atletas: list[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()
+    if nome:
+        atletas = [atleta for atleta in atletas if atleta.nome == nome]
+    if cpf:
+        atletas = [atleta for atleta in atletas if atleta.cpf == cpf]
 
     return atletas
 
