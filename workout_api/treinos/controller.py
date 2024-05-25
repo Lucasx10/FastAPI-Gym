@@ -19,12 +19,19 @@ async def post(
     treino_in: TreinoIn = Body(...)
 )-> TreinoOut: 
     
-    treino_out = TreinoOut(id=uuid4(), **treino_in.model_dump())
-    treino_model = TreinoModel(**treino_out.model_dump())
-    
-    db_session.add(treino_model)
-    await db_session.commit()
+    try:
+        treino_out = TreinoOut(id=uuid4(), **treino_in.model_dump())
+        treino_model = TreinoModel(**treino_out.model_dump())
+        
+        db_session.add(treino_model)
+        await db_session.commit()
 
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'Já existe um treino cadastrado com o nome: {treino_out.nome}'
+        )
+    
     return treino_out
 
 @router.get(

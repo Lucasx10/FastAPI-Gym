@@ -56,18 +56,17 @@ async def post(
 
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f'Ocorreu um erro ao inserir os dados no banco'
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'Já existe um atleta cadastrado com o cpf: {atleta_out.cpf}'
         )
 
     return atleta_out
 
 @router.get(
-    '/', 
+    '/',  
     summary='Consultar todos os Atletas',
     status_code=status.HTTP_200_OK,
     response_model=list[AtletaOut],
-    response_model_exclude=["cpf","peso","altura","idade","sexo"]
 )
 async def query(db_session: DatabaseDependency, nome: str | None = None, cpf: str | None = None) -> list[AtletaOut]:
     atletas: list[AtletaOut] = (await db_session.execute(select(AtletaModel))).scalars().all()

@@ -1,6 +1,7 @@
 from uuid import uuid4
 from fastapi import APIRouter, Body, HTTPException, status
 from pydantic import UUID4
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 from workout_api.contrib.dependencies import DatabaseDependency
 from workout_api.academia.schemas import AcademiaIn, AcademiaOut
@@ -17,12 +18,24 @@ router = APIRouter()
 async def post(
     db_session: DatabaseDependency, 
     academia_in: AcademiaIn = Body(...)
-)-> AcademiaOut:     
-    academia_out = AcademiaOut(id=uuid4(), **academia_in.model_dump())
-    academia_model = AcademiaModel(**academia_out.model_dump())
-    
-    db_session.add(academia_model)
-    await db_session.commit()
+)-> AcademiaOut:    
+    try: 
+        academia_out = AcademiaOut(id=uuid4(), **academia_in.model_dump())
+        academia_model = AcademiaModel(**academia_out.model_dump())
+        
+        db_session.add(academia_model)
+        await db_session.commit()
+
+    except IntegrityError as e:
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            detail=f'Já existe uma academia cadastrada com o nome: {academia_in.cpf}'
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail='Ocorreu um erro ao inserir os dados no banco'
+        )
 
     return academia_out
 
